@@ -20,7 +20,6 @@ namespace DTSharp.Tests
             var humidity = new int[] { 0, 0, 0, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 0 };
             var wind = new int[] { 0, 1, 0, 0, 0, 1, 1, 0, 0, 0, 1, 1, 0, 1 };
             var output = new int[] { 0, 0, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 0 };
-
             DecisionTreeLearning<int> dtl = DecisionTreeLearning<int>.Create<int>(x => output[x], new DecisionTreeOptions()
             {
                 MaxDepth = 3,
@@ -31,13 +30,15 @@ namespace DTSharp.Tests
             dtl.AddDiscreteFeature<string>("temp", a => tempStrs[temp[a]]);
             dtl.AddDiscreteFeature<int>("humidity", a => humidity[a]);
             dtl.AddDiscreteFeature<int>("wind", a => wind[a]);
-
             var dt = dtl.Learn(Enumerable.Range(0, output.Length));
 
             Assert.AreEqual(dt.Feature.Name, "outlook");
             Assert.AreEqual(dt.ChildNodes.First(x => (x.Key as DiscreteFeatureValue).Value.ToString() == "Rainy").Value.Feature.Name, "humidity");
             Assert.AreEqual(dt.ChildNodes.First(x => (x.Key as DiscreteFeatureValue).Value.ToString() == "Sunny").Value.Feature.Name, "wind");
             Assert.IsNull(dt.ChildNodes.First(x => (x.Key as DiscreteFeatureValue).Value.ToString() == "Overcast").Value.Feature, "Overcast node should be leaf");
+
+            Assert.AreEqual(dt.GetOutput(0), 0);
+            Assert.AreEqual(dt.GetOutput(2), 1);
         }
         [TestMethod]
         public void ContiniousFeatureTest()

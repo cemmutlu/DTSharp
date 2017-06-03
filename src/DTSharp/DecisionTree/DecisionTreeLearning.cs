@@ -28,7 +28,7 @@ namespace DTSharp.DecisionTree
         /// </summary>
         /// <param name="data">Learning Dataset</param>
         /// <returns>A decision tree</returns>
-        public TreeNode Learn(IEnumerable<T> data)
+        public DecisionTree Learn(IEnumerable<T> data)
         {
             return Learn(data.AsQueryable());
         }
@@ -37,10 +37,12 @@ namespace DTSharp.DecisionTree
         /// </summary>
         /// <param name="data">Learning Dataset</param>
         /// <returns>A decision tree</returns>
-        public TreeNode Learn(IQueryable<T> data)
+        public DecisionTree Learn(IQueryable<T> data)
         {
-            var root = new TreeNode();
-            root.OutputProperties = InitOutputProperties(data);
+            var root = new DecisionTree()
+            {
+                OutputProperties = InitOutputProperties(data)
+            };
             Learn(root, data);
             return root;
         }
@@ -79,8 +81,7 @@ namespace DTSharp.DecisionTree
             });
         }
 
-
-
+     
         void Learn(TreeNode node, IQueryable<T> data)
         {
             var maxSplitQuality = node.OutputProperties == null ? double.MinValue : options.SplitQualifier(node.OutputProperties) * node.OutputProperties.DataCount;
